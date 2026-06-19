@@ -1,5 +1,0 @@
-single: { var }
-double-spaced:  var 
-double-tight: var
-Django tag: {% if x %}yes{% endif %}
-END
