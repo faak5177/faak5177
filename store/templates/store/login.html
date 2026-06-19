@@ -1,0 +1,15 @@
+{% extends 'store/base.html' %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<h2 style="color:#B8860B;">Вход в систему</h2>
+<form method="post" style="max-width:380px; background:#fafafa; padding:18px; border-radius:6px;">{% csrf_token %}
+  <label>Логин</label>
+  <input type="text" name="login" required>
+  <label>Пароль</label>
+  <input type="password" name="password" required>
+  <div style="margin-top:16px; display:flex; gap:8px;">
+    <button class="btn" type="submit">Войти</button>
+    <a class="btn btn-secondary" href="{% url 'product_list' %}">Гостевой режим</a>
+  </div>
+</form>
+{% endblock %}

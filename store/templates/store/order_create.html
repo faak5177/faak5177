@@ -1,0 +1,21 @@
+{% extends 'store/base.html' %}
+{% block title %}Новый заказ{% endblock %}
+{% block content %}
+<a class="btn btn-back" href="{% url 'order_list' %}">← Назад</a>
+<h2 style="color:#B8860B;">Новый заказ</h2>
+<form method="post" style="max-width:560px; background:#fff; padding:18px; border-radius:6px;">{% csrf_token %}
+  <label>Клиент</label>
+  <select name="client_id" required><option value="">—</option>{% for u in users %}<option value="__LBRC__ u.id __RBRC__">__LBRC__ u.full_name __RBRC__ (__LBRC__ u.login __RBRC__)</option>{% endfor %}</select>
+  <label>Товар</label>
+  <select name="product_article" required><option value="">—</option>{% for p in products %}<option value="__LBRC__ p.article __RBRC__">__LBRC__ p.name __RBRC__ (арт. __LBRC__ p.article __RBRC__)</option>{% endfor %}</select>
+  <label>Количество</label>
+  <input type="number" name="quantity" value="1" min="1" required>
+  <label>Адрес выдачи</label>
+  <input type="text" name="pickup_address">
+  <label>Статус</label>
+  <select name="status"><option value="new">Новый</option><option value="processing">В обработке</option><option value="shipped">Отправлен</option><option value="delivered">Доставлен</option><option value="completed">Выполнен</option><option value="cancelled">Отменён</option></select>
+  <label>Дата выдачи</label>
+  <input type="datetime-local" name="delivery_date">
+  <div style="margin-top:16px;"><button class="btn" type="submit">Создать</button></div>
+</form>
+{% endblock %}

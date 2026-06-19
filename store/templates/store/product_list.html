@@ -1,0 +1,55 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block title %}Список товаров{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+  <h2 style="margin:0; color:#B8860B;">Список товаров</h2>
+  <div style="display:flex; gap:8px;">
+    {% if can_admin %}<a class="btn" href="{% url 'product_create' %}">+ Добавить товар</a>{% endif %}
+    {% if can_manage %}<a class="btn btn-secondary" href="{% url 'order_list' %}">Заказы</a>{% endif %}
+    {% if user.is_authenticated %}<a class="btn btn-back" href="{% url 'logout' %}">Выйти</a>{% else %}<a class="btn" href="{% url 'login' %}">Войти</a>{% endif %}
+  </div>
+</div>
+<form method="get" style="background:#fafafa; padding:14px; border-radius:6px; margin-bottom:14px; display:grid; grid-template-columns:2fr 1fr 1fr 1fr auto; gap:8px;">
+  <input type="text" name="search" placeholder="Поиск по всем полям..." value="__LBRC__ current_search __RBRC__">
+  <select name="sort">
+    <option value="name" {% if current_sort == 'name' %}selected{% endif %}>По наименованию</option>
+    <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Цена ↑</option>
+    <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Цена ↓</option>
+    <option value="discount_asc" {% if current_sort == 'discount_asc' %}selected{% endif %}>Скидка ↑</option>
+    <option value="discount_desc" {% if current_sort == 'discount_desc' %}selected{% endif %}>Скидка ↓</option>
+    <option value="quantity_asc" {% if current_sort == 'quantity_asc' %}selected{% endif %}>Кол-во ↑</option>
+    <option value="quantity_desc" {% if current_sort == 'quantity_desc' %}selected{% endif %}>Кол-во ↓</option>
+  </select>
+  <select name="category">
+    <option value="">Все категории</option>
+    {% for c in categories %}<option value="__LBRC__ c.id __RBRC__" {% if current_category == c.id|stringformat:'s' %}selected{% endif %}>__LBRC__ c.name __RBRC__</option>{% endfor %}
+  </select>
+  <select name="manufacturer">
+    <option value="">Все производители</option>
+    {% for m in manufacturers %}<option value="__LBRC__ m.id __RBRC__" {% if current_manufacturer == m.id|stringformat:'s' %}selected{% endif %}>__LBRC__ m.name __RBRC__</option>{% endfor %}
+  </select>
+  <button type="submit" class="btn">Найти</button>
+</form>
+<table>
+  <thead><tr><th>Фото</th><th>Артикул</th><th>Наименование</th><th>Категория</th><th>Производитель</th><th>Цена</th><th>Скидка</th><th>Кол-во</th>{% if can_admin %}<th></th>{% endif %}</tr></thead>
+  <tbody>
+  {% for p in products %}
+  {% if p.discount > 12 %}<tr style="background:#F4A460;">
+  {% elif p.quantity == 0 %}<tr style="background:#ADD8E6;">
+  {% else %}<tr>{% endif %}
+    <td>{% if p.photo %}<img src="{% static 'uploads/' %}__LBRC__ p.photo __RBRC__" width="75" height="50" style="object-fit:cover; border-radius:4px;">{% else %}<img src="{% static 'picture.png' %}" width="75" height="50" style="object-fit:cover; border-radius:4px;">{% endif %}</td>
+    <td>__LBRC__ p.article __RBRC__</td>
+    <td><strong>__LBRC__ p.name __RBRC__</strong><br><small style="color:#777;">__LBRC__ p.description|truncatechars:80 __RBRC__</small></td>
+    <td>__LBRC__ p.category.name __RBRC__</td>
+    <td>__LBRC__ p.manufacturer.name __RBRC__</td>
+    <td>{% if p.discount > 0 %}<span style="color:#c62828; text-decoration:line-through;">__LBRC__ p.price __RBRC__</span> <strong>__LBRC__ p.final_price|floatformat:2 __RBRC__ ₽</strong>{% else %}__LBRC__ p.price __RBRC__ ₽{% endif %}</td>
+    <td>__LBRC__ p.discount __RBRC__%</td>
+    <td>__LBRC__ p.quantity __RBRC__ __LBRC__ p.number_measure __RBRC__</td>
+    {% if can_admin %}<td style="white-space:nowrap;"><a class="btn" href="{% url 'product_edit' p.article %}">Изм.</a> <a class="btn btn-danger" href="{% url 'product_delete' p.article %}" onclick="return confirm('Удалить товар?')">✕</a></td>{% endif %}
+  </tr>
+  {% empty %}<tr><td colspan="9" style="text-align:center; padding:30px; color:#888;">Товары не найдены</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

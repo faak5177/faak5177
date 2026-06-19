@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Демоэкзамен{% endblock %}</title>
+  {% load static %}
+  <link rel="icon" href="{% static 'favicon.ico' %}">
+  <style>
+    body { font-family: Calibri, Arial, sans-serif; background: #fff; margin: 0; }
+    header { background: #DAA520; color: #fff; padding: 14px 22px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 22px; }
+    main { padding: 22px; max-width: 1180px; margin: 0 auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
+    th { background: #f5e8c8; color: #8b6914; }
+    .btn { display: inline-block; padding: 6px 14px; background: #DAA520; color: #fff; border: 0; border-radius: 4px; text-decoration: none; cursor: pointer; }
+    .btn:hover { background: #B8860B; }
+    .btn-secondary { background: #8b6914; }
+    .btn-danger { background: #c62828; }
+    .btn-back { background: #888; }
+    input, select, textarea { padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; }
+    label { display: block; margin-top: 10px; font-weight: 600; color: #8b6914; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Демоэкзамен — Стройматериалы</h1>
+  <div>__LBRC__ user_display __RBRC__</div>
+</header>
+<main>
+  {% if messages %}<ul style="list-style:none; padding:0;">{% for m in messages %}<li style="padding:8px 12px; margin-bottom:8px; border-radius:4px; background:#fef7e0; color:#8b6914;">__LBRC__ m __RBRC__</li>{% endfor %}</ul>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

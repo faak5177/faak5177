@@ -1,0 +1,23 @@
+{% extends 'store/base.html' %}
+{% block title %}Заказы{% endblock %}
+{% block content %}
+<a class="btn btn-back" href="{% url 'product_list' %}">← К товарам</a>
+<div style="display:flex; justify-content:space-between; align-items:center; margin:14px 0;">
+  <h2 style="margin:0; color:#B8860B;">Заказы</h2>
+  {% if can_admin %}<a class="btn" href="{% url 'order_create' %}">+ Новый заказ</a>{% endif %}
+</div>
+<table>
+  <thead><tr><th>Артикул</th><th>Товар</th><th>Клиент</th><th>Кол-во</th><th>Статус</th><th>Адрес</th><th>Дата заказа</th><th>Дата выдачи</th>{% if can_admin %}<th></th>{% endif %}</tr></thead>
+  <tbody>
+  {% for o in orders %}
+  <tr>
+    <td>__LBRC__ o.product_id __RBRC__</td><td>__LBRC__ o.product.name __RBRC__</td><td>__LBRC__ o.user.full_name __RBRC__</td>
+    <td>__LBRC__ o.quantity __RBRC__</td><td>__LBRC__ o.get_status_display __RBRC__</td><td>__LBRC__ o.pickup_address __RBRC__</td>
+    <td>__LBRC__ o.order_date|date:"d.m.Y H:i" __RBRC__</td><td>__LBRC__ o.delivery_date|date:"d.m.Y H:i"|default:"—" __RBRC__</td>
+    {% if can_admin %}<td style="white-space:nowrap;"><a class="btn" href="{% url 'order_edit' o.id %}">Изм.</a> <a class="btn btn-danger" href="{% url 'order_delete' o.id %}" onclick="return confirm('Удалить?')">✕</a></td>{% endif %}
+  </tr>
+  {% empty %}<tr><td colspan="9" style="text-align:center; padding:30px; color:#888;">Заказов пока нет</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

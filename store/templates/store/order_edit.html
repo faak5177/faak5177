@@ -1,0 +1,19 @@
+{% extends 'store/base.html' %}
+{% block title %}Ред. заказа #__LBRC__ order.id __RBRC__{% endblock %}
+{% block content %}
+<a class="btn btn-back" href="{% url 'order_list' %}">← Назад</a>
+<h2 style="color:#B8860B;">Ред. заказа #__LBRC__ order.id __RBRC__</h2>
+<form method="post" style="max-width:560px; background:#fff; padding:18px; border-radius:6px;">{% csrf_token %}
+  <label>Клиент</label>
+  <select name="client_id" required>{% for u in users %}<option value="__LBRC__ u.id __RBRC__" {% if u.id == order.user_id %}selected{% endif %}>__LBRC__ u.full_name __RBRC__</option>{% endfor %}</select>
+  <label>Товар</label>
+  <select name="product_article" required>{% for p in products %}<option value="__LBRC__ p.article __RBRC__" {% if p.article == order.product_id %}selected{% endif %}>__LBRC__ p.name __RBRC__</option>{% endfor %}</select>
+  <label>Кол-во</label>
+  <input type="number" name="quantity" value="__LBRC__ order.quantity __RBRC__" min="1" required>
+  <label>Адрес</label>
+  <input type="text" name="pickup_address" value="__LBRC__ order.pickup_address __RBRC__">
+  <label>Статус</label>
+  <select name="status">{% for code, label in status_choices %}<option value="__LBRC__ code __RBRC__" {% if code == order.status %}selected{% endif %}>__LBRC__ label __RBRC__</option>{% endfor %}</select>
+  <div style="margin-top:16px;"><button class="btn" type="submit">Сохранить</button></div>
+</form>
+{% endblock %}
