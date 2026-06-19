@@ -1,42 +1,41 @@
 from django.contrib import admin
-from store.models import Role, User, Category, Manufacturer, Supplier, Product, PickPoint
+from store.models import Role, User, Category, Manufacturer, Supplier, Product, PickPoint, Order
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
 
 @admin.register(User)
-class CustomUserAdmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'full_name', 'login', 'role')
     list_filter = ('role',)
     search_fields = ('last_name', 'first_name', 'login')
 
-    @admin.display(description='ФИО')
-    def full_name(self, obj):
-        return obj.full_name
-
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
-    search_fields = ('name',)
 
 @admin.register(Manufacturer)
 class ManufacturerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
-    search_fields = ('name',)
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
-    search_fields = ('name',)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'article', 'price', 'discount', 'quantity', 'category')
+    list_display = ('article', 'name', 'category', 'manufacturer', 'price', 'discount', 'quantity')
     list_filter = ('category', 'manufacturer', 'supplier')
-    search_fields = ('name', 'article', 'description')
+    search_fields = ('article', 'name', 'description')
 
 @admin.register(PickPoint)
 class PickPointAdmin(admin.ModelAdmin):
-    list_display = ('id', 'city', 'street', 'house', 'zip_code')
+    list_display = ('id', 'zip_code', 'city', 'street', 'house')
     search_fields = ('city', 'street')
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'product', 'quantity', 'status', 'order_date')
+    list_filter = ('status',)
+    search_fields = ('user__last_name', 'product__name')

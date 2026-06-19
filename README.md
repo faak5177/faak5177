@@ -1,49 +1,90 @@
-# Демоэкзамен — Продажа стройматериалов (вариант 3, профильный)
+# Демоэкзамен — Магазин стройматериалов (Вариант 3)
 
-Проект по демоэкзамену 09.02.07-2-2026-ПУ — информационная система для продажи стройматериалов.
+Django + SQLite реализация задания демоэкзамена по специальности 09.02.07 «Информационные системы и программирование».
 
-## Стек
+## Структура проекта
 
-- **Python 3.10+**
-- **Django 4.2+**
-- **SQLite 3** (`demoekz.db` в корне проекта)
-- **Pillow** — масштабирование фото до 300×200
+```
+demoekz_project/   — Django settings, urls, wsgi
+store/             — приложение магазина
+  models.py        — модели (Roles, Users, Category, Manufactures, Suplyers, Products, Pickups, Orders)
+  views.py         — представления (CRUD товаров и заказов, авторизация, фильтры/сортировки/поиск)
+  admin.py         — админка Django
+  backends.py      — кастомный auth backend по таблице Users
+  templates/store/ — HTML-шаблоны (base, login, product_list, product_form, order_*)
+  management/      — management-команды (create_orders_table, import_data)
+backup/            — резервная копия БД (SQL + .db)
+static/uploads/    — фотографии товаров (300×200)
+docs/              — ER-диаграмма, UseCase, блок-схема алгоритма, отчёты по диску/таблицам, тестовые сценарии
+setup_django.py    — восстанавливает Django-скобки `{}` в шаблонах после клонирования
+```
 
 ## Быстрый старт
 
 ```bash
-python -m venv venv
-source venv/bin/activate     # или venv\Scripts\activate на Windows
+git clone https://github.com/faak5177/faak5177.git
+cd faak5177
+
+# 1. Восстановить Django-шаблонные скобки в HTML
+python setup_django.py
+
+# 2. Зависимости
 pip install -r requirements.txt
 
-python setup_django.py             # ВАЖНО: восстанавливает Django-скобки в шаблонах (одноразово)
+# 3. Системные таблицы Django (auth, sessions, admin)
 python manage.py migrate
-python manage.py create_orders_table   # создаёт все таблицы managed=False
-python manage.py import_data          # импорт из CSV
+
+# 4. Бизнес-таблицы по схеме демоэкзамена
+python manage.py create_orders_table
+
+# 5. Импорт CSV (Прил_2: Роли, Пользователи, Категории, Производители, Поставщики, Товары, Точки подбора)
+python manage.py import_data
+
+# 6. Запуск
 python manage.py runserver
 ```
 
-Открыть в браузере: <http://127.0.0.1:8000/>
+Открыть в браузере: http://127.0.0.1:8000/
 
 ## Учётные записи
 
-| Роль | Логин | Пароль |
-|------|-------|--------|
-| Администратор | `94d5ous@gmail.com` | `uzWC67` |
-| Менеджер      | `1diph5e@tutanota.com` | `8ntwUp` |
-| Клиент        | `5d4zbu@tutanota.com`  | `rwVDh9` |
-| Гость         | — (кнопка «Гостевой режим») | — |
+| Роль          | Логин                  | Пароль  | ФИО                  |
+|---------------|------------------------|---------|----------------------|
+| Администратор | 94d5ous@gmail.com      | uzWC67  | Ворсин Пётр          |
+| Менеджер      | 1diph5e@tutanota.com   | 8ntwUp  | Степанов Михаил      |
+| Клиент        | 5d4zbu@tutanota.com    | rwVDh9  | Михайлюк Анна        |
+| Гость         | —                      | —       | Без авторизации      |
 
-## Структура БД (3НФ)
+## Реализация задания
 
-- `Roles`, `Users`, `Category`, `Manufactures`, `Suplyers`, `Products`, `Pickups`, `Orders`
-- ER-диаграмма: `docs/ER_diagram.pdf` / `.png`
-- UML use-case: `docs/UseCase_diagram.pdf` / `.png`
-- Блок-схема алгоритма авторизации: `docs/algorithm_flowchart.pdf` / `.png`
+**М1.** БД в 3НФ с PK/FK, SQL-скрипт создания (`store/management/commands/create_orders_table.py`), ER-диаграмма (`docs/ER_diagram.pdf`), импорт Прил_2 через `import_data`.
 
-## Вариативная часть (профиль)
+**М2.** Авторизация (учётка из БД или гостевой режим), 4 роли (Админ / Менеджер / Клиент / Гость), ФИО справа в шапке, список товаров с фото 300×200, скидка > 12 % → фон `#F4A460`, нет на складе → голубой фон, старая цена красным перечёркнута. Блок-схема алгоритма по ГОСТ 19.701-90 в `docs/algorithm_flowchart.pdf`.
 
-- `backup/demoekzamen_backup_2026-06-19.db` — бинарный бэкап
-- `backup/demoekzamen_backup_2026-06-19.sql` — SQL-дамп
-- `docs/disk_usage_report.docx` — отчёт по месту на диске
-- `docs/test_scenarios.docx` — тестовые сценарии по ролям
+**М3.** Кнопка «Назад» во всех формах, типизированные исключения (`ValueError`, `Product.DoesNotExist` и т. д.), сортировки (имя/цена/скидка/кол-во), фильтр по производителю и категории, поиск по всем полям (реакция при submit формы), CRUD товаров только для администратора, фото авто-масштабируется до 300×200 при загрузке, путь хранится в БД, ID товара (артикул) — auto+1, артикул read-only при редактировании, удаление товара блокируется при наличии связанных заказов.
+
+**М4.** Раздел «Заказы» для менеджеров и администраторов с колонками артикул/статус/адрес/датами, CRUD заказов только для администратора. Менеджер видит только свои заказы, администратор — все.
+
+## Вариативная часть
+
+- `backup/demoekzamen_backup_2026-06-19.sql` — SQL-дамп БД
+- `docs/disk_usage_report.docx` — отчёт о размере БД и таблиц на диске
+- `docs/UseCase_diagram.pdf` — UML use-case диаграмма ролей
+- `docs/test_scenarios.docx` — тестовые сценарии (≥ 2 на каждую роль)
+
+## Важно после клонирования
+
+Из-за технических ограничений при загрузке через MCP в шаблонах вместо Django-переменных `{...}` записаны метки `__LBRC__ ... __RBRC__`. **Перед запуском обязательно выполнить:**
+
+```bash
+python setup_django.py
+```
+
+Это восстановит исходный синтаксис Django-шаблонов. Скрипт безопасен и идемпотентен.
+
+## Технологии
+
+- Python 3.10+
+- Django 4.2
+- SQLite 3
+- Pillow (масштабирование фото)
