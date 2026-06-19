@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.idea/
+.vscode/
+.env
+venv/
+*.log
+.DS_Store
+staticfiles/
+media/
+db.sqlite3
+# Не игнорим demoekz.db, т.к. это рабочая БД проекта
